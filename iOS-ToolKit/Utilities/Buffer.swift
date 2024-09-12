@@ -9,7 +9,7 @@ import Foundation
 
 final class Buffer<T> {
     
-    private let bufferQueue = DispatchQueue(label: "com.wavinDev.Buffer", qos: .background)
+    private let bufferQueue = DispatchQueue(label: "com.wavinDev.Buffer", qos: .background, attributes: .concurrent)
     
     private var items: [T] = []
     private var capacity: Int
@@ -24,18 +24,18 @@ final class Buffer<T> {
     }
     
     func addItem(_ item: T) {
-        bufferQueue.sync {
+        bufferQueue.async(flags: .barrier) {
             self.items.append(item)
-            if self.items.count == capacity {
-                onCapacityReached?(self.items)
+            if self.items.count == self.capacity {
+                self.onCapacityReached?(self.items)
                 // keepingCapacity to true since items will need 60 entries for next inference
-                items.removeAll(keepingCapacity: true)
+                self.items.removeAll(keepingCapacity: true)
             }
         }
     }
     
     func clear(keepingCapacity: Bool = false) {
-        bufferQueue.sync {
+        bufferQueue.async(flags: .barrier) {
             self.items.removeAll(keepingCapacity: keepingCapacity)
         }
     }
