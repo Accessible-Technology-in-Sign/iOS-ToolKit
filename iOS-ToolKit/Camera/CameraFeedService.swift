@@ -299,9 +299,9 @@ final class CameraFeedService: NSObject {
     
     // MARK: Notification Observer Handling
     private func addObservers() {
-        NotificationCenter.default.addObserver(self, selector: #selector(CameraFeedService.sessionRuntimeErrorOccured(notification:)), name: NSNotification.Name.AVCaptureSessionRuntimeError, object: session)
-        NotificationCenter.default.addObserver(self, selector: #selector(CameraFeedService.sessionWasInterrupted(notification:)), name: NSNotification.Name.AVCaptureSessionWasInterrupted, object: session)
-        NotificationCenter.default.addObserver(self, selector: #selector(CameraFeedService.sessionInterruptionEnded), name: NSNotification.Name.AVCaptureSessionInterruptionEnded, object: session)
+        NotificationCenter.default.addObserver(self, selector: #selector(sessionRuntimeErrorOccured(_:)), name: NSNotification.Name.AVCaptureSessionRuntimeError, object: session)
+        NotificationCenter.default.addObserver(self, selector: #selector(sessionWasInterrupted(_:)), name: NSNotification.Name.AVCaptureSessionWasInterrupted, object: session)
+        NotificationCenter.default.addObserver(self, selector: #selector(sessionInterruptionEnded(_:)), name: NSNotification.Name.AVCaptureSessionInterruptionEnded, object: session)
     }
     
     private func removeObservers() {
@@ -311,7 +311,7 @@ final class CameraFeedService: NSObject {
     }
     
     // MARK: Notification Observers
-    @objc func sessionWasInterrupted(notification: Notification) {
+    @objc func sessionWasInterrupted(_ notification: Notification) {
         
         if let userInfoValue = notification.userInfo?[AVCaptureSessionInterruptionReasonKey] as AnyObject?,
            let reasonIntegerValue = userInfoValue.integerValue,
@@ -330,11 +330,11 @@ final class CameraFeedService: NSObject {
         }
     }
     
-    @objc func sessionInterruptionEnded(notification: Notification) {
+    @objc func sessionInterruptionEnded(_ notification: Notification) {
         self.delegate?.sessionInterruptionEnded()
     }
     
-    @objc func sessionRuntimeErrorOccured(notification: Notification) {
+    @objc func sessionRuntimeErrorOccured(_ notification: Notification) {
         guard let error = notification.userInfo?[AVCaptureSessionErrorKey] as? AVError else {
             return
         }
@@ -373,20 +373,3 @@ extension CameraFeedService: AVCaptureVideoDataOutputSampleBufferDelegate {
         delegate?.didOutput(sampleBuffer: sampleBuffer, orientation: UIImage.Orientation.from(deviceOrientation: UIDevice.current.orientation))
     }
 }
-
-// MARK: UIImage.Orientation Extension
-extension UIImage.Orientation {
-    static func from(deviceOrientation: UIDeviceOrientation) -> UIImage.Orientation {
-        switch deviceOrientation {
-        case .portrait:
-            return .up
-        case .landscapeLeft:
-            return .left
-        case .landscapeRight:
-            return .right
-        default:
-            return .up
-        }
-    }
-}
-

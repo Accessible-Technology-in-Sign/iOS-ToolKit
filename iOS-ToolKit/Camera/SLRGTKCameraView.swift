@@ -8,9 +8,18 @@
 import UIKit
 import MediaPipeTasksVision
 
-final class CameraView: UIView {
+protocol SLRGTKCameraViewDelegate: AnyObject {
+    func cameraViewDidBeginInferring()
+    func cameraViewDidSetupEngine()
+    func cameraViewDidInferSign(_ signInferenceResult: SignInferenceResult)
+    func cameraViewDidThrowError(_ error: Error)
+}
+
+final class SLRGTKCameraView: UIView {
     
-    private lazy var cameraFeedService = CameraFeedService(previewView: self)
+    weak var delegate: SLRGTKCameraViewDelegate?
+    
+    private lazy var buffer: Buffer<HandLandmarkerResult> = Buffer(capacity: settings.signInferenceSettings.numberOfFramesPerInference)
     
     private let handLandmarkerServiceQueue = DispatchQueue(
         label: "com.wavinDev.cameraView.handLandmarkerServiceQueue",
@@ -19,6 +28,8 @@ final class CameraView: UIView {
     private let backgroundQueue = DispatchQueue(label: "com.wavinDev.cameraView.backgroundQueue")
     
     private let overlayView = OverlayView()
+    
+    private var settings: SLRGTKSettings = .defaultSettings
     
     private lazy var resumeButton: UIButton = {
         let button = UIButton()
@@ -35,6 +46,8 @@ final class CameraView: UIView {
         return label
     }()
     
+    private lazy var cameraFeedService = CameraFeedService(previewView: self)
+    
     private var _handLandmarkerService: HandLandmarkerService?
     private var handLandmarkerService: HandLandmarkerService? {
         get {
@@ -49,14 +62,16 @@ final class CameraView: UIView {
         }
     }
     
+    private var signInferenceService: SignInferenceService?
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setup()
+        setupUI()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        setup()
+        setupUI()
     }
     
     override func layoutSubviews() {
@@ -64,7 +79,13 @@ final class CameraView: UIView {
         cameraFeedService.updateVideoPreviewLayer(toFrame: bounds)
     }
     
-    private func setup() {
+    func setupEngine() {
+        setupSignInferenceService()
+        configureBuffer()
+        delegate?.cameraViewDidSetupEngine()
+    }
+    
+    private func setupUI() {
         backgroundColor = .clear
         overlayView.backgroundColor = .clear
         
@@ -78,11 +99,75 @@ final class CameraView: UIView {
             overlayView.trailingAnchor.constraint(equalTo: trailingAnchor),
             overlayView.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
+        
+        // TODO: Resume and Camera Unavailable
+
+    }
+    
+    private func configureBuffer() {
+        // Called on a background queue
+        buffer.onCapacity { [weak self] handLandmarks in
+            guard let strongSelf = self else { return }
+            
+            DispatchQueue.main.async {
+                strongSelf.delegate?.cameraViewDidBeginInferring()
+                if !strongSelf.settings.isContinuous {
+                    strongSelf.stop()
+                }
+            }
+            
+            var inferenceData: [Float] = []
+            
+            let numberOfPointsPerLandmark = strongSelf.settings.signInferenceSettings.numberOfPointsPerLandmark
+            
+            handLandmarks.forEach { landmark in
+                guard let normalizedLandmarks = landmark.landmarks.first,
+                      normalizedLandmarks.count == numberOfPointsPerLandmark else {
+                    return // TODO: Keep this condition in sync with Android
+                }
+                
+                for i in 0 ..< numberOfPointsPerLandmark {
+                    inferenceData.append(normalizedLandmarks[i].x)
+                    inferenceData.append(normalizedLandmarks[i].y)
+                }
+            }
+            
+            if let inferenceResults = strongSelf.signInferenceService?.runModel(using: inferenceData) {
+                DispatchQueue.main.async {
+                    strongSelf.delegate?.cameraViewDidInferSign(inferenceResults)
+                }
+            }
+            
+        }
+    }
+    
+    private func setupSignInferenceService() {
+        do {
+            signInferenceService = try SignInferenceService(settings: settings.signInferenceSettings)
+        } catch {
+            delegate?.cameraViewDidThrowError(error)
+        }
+    }
+}
+
+// MARK: - Settings
+extension SLRGTKCameraView {
+    
+    private func changeSettings(_ settings: SLRGTKSettings) {
+        self.settings = settings
+        reconfigureEngine()
+    }
+    
+    private func reconfigureEngine() {
+        clearAndInitializeHandLandmarkerService()
+        buffer = Buffer(capacity: settings.signInferenceSettings.numberOfFramesPerInference)
+        configureBuffer()
+        setupSignInferenceService()
     }
 }
 
 // MARK: - Start
-extension CameraView {
+extension SLRGTKCameraView {
     
     func start() {
         initializeHandLandmarkerServiceOnSessionResumption()
@@ -90,11 +175,9 @@ extension CameraView {
             DispatchQueue.main.async {
                 switch cameraConfiguration {
                 case .failed:
-                    print("Failed")
-                    //              self?.presentVideoConfigurationErrorAlert()
+                    self?.delegate?.cameraViewDidThrowError(CameraError.configurationFailed)
                 case .permissionDenied:
-                    print("Permission Denied")
-                    //              self?.presentCameraPermissionsDeniedAlert()
+                    self?.delegate?.cameraViewDidThrowError(CameraError.permissionDenied)
                 default:
                     break
                 }
@@ -108,23 +191,28 @@ extension CameraView {
     
     private func clearAndInitializeHandLandmarkerService() {
         handLandmarkerService = nil
-        handLandmarkerService = HandLandmarkerService.liveStreamHandLandmarkerService(
-            modelPath: DefaultConstants.modelPath,
-            numHands: DefaultConstants.numHands,
-            minHandDetectionConfidence: DefaultConstants.minHandDetectionConfidence,
-            minHandPresenceConfidence: DefaultConstants.minHandPresenceConfidence,
-            minTrackingConfidence: DefaultConstants.minTrackingConfidence,
-            liveStreamDelegate: self,
-            delegate: DefaultConstants.delegate
-        )
+        do {
+            handLandmarkerService = try HandLandmarkerService(
+                modelPath: settings.handlandmarkerSettings.modelPath.resourcePathString,
+                numHands: settings.handlandmarkerSettings.numHands,
+                minHandDetectionConfidence: settings.handlandmarkerSettings.minHandDetectionConfidence,
+                minHandPresenceConfidence: settings.handlandmarkerSettings.minHandPresenceConfidence,
+                minTrackingConfidence: settings.handlandmarkerSettings.minTrackingConfidence,
+                delegate: settings.handlandmarkerSettings.handLandmarkerDelegate,
+                resultsDelegate: self
+            )
+        } catch {
+            delegate?.cameraViewDidThrowError(error)
+        }
     }
 }
 
 // MARK: - Stop
-extension CameraView {
+extension SLRGTKCameraView {
     func stop() {
         cameraFeedService.stopSession()
         clearhandLandmarkerServiceOnSessionInterruption()
+        buffer.clear(keepingCapacity: false)
     }
     
     private func clearhandLandmarkerServiceOnSessionInterruption() {
@@ -133,7 +221,7 @@ extension CameraView {
 }
 
 // MARK: - Resume Interrupted Session
-extension CameraView {
+extension SLRGTKCameraView {
     @objc private func didTapResume(_ sender: UIButton) {
         cameraFeedService.resumeInterruptedSession {[weak self] isSessionRunning in
             if isSessionRunning {
@@ -145,7 +233,7 @@ extension CameraView {
     }
 }
 
-extension CameraView: CameraFeedServiceDelegate {
+extension SLRGTKCameraView: CameraFeedServiceDelegate {
     func didOutput(sampleBuffer: CMSampleBuffer, orientation: UIImage.Orientation) {
         let currentTimeMs = Date().timeIntervalSince1970 * 1000
         // Pass the pixel buffer to mediapipe
@@ -153,7 +241,8 @@ extension CameraView: CameraFeedServiceDelegate {
             self?.handLandmarkerService?.detectAsync(
                 sampleBuffer: sampleBuffer,
                 orientation: orientation,
-                timeStamps: Int(currentTimeMs))
+                timeStamps: Int(currentTimeMs)
+            )
         }
     }
     
@@ -184,14 +273,19 @@ extension CameraView: CameraFeedServiceDelegate {
     
 }
 
-extension CameraView: HandLandmarkerServiceLiveStreamDelegate {
+extension SLRGTKCameraView: HandLandmarkerServiceLiveStreamDelegate {
     func handLandmarkerService(_ handLandmarkerService: HandLandmarkerService, 
-                               didFinishDetection result: ResultBundle?,
+                               didFinishDetection result: HandLandmarkerResultBundle?,
                                error: Error?) {
         DispatchQueue.main.async { [weak self] in
             guard let strongSelf = self else { return }
             guard let handLandmarkerResult = result?.handLandmarkerResults.first as? HandLandmarkerResult else { return
             }
+            
+            if !handLandmarkerResult.landmarks.isEmpty {
+                strongSelf.buffer.addItem(handLandmarkerResult)
+            }
+            
             let imageSize = strongSelf.cameraFeedService.videoResolution
             let handOverlays = OverlayView.handOverlays(
                 fromMultipleHandLandmarks: handLandmarkerResult.landmarks,
