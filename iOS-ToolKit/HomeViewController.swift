@@ -9,7 +9,7 @@ import UIKit
 
 final class HomeViewController: UIViewController {
     
-    private let cameraView = CameraView()
+    private let cameraView = SLRGTKCameraView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,6 +23,8 @@ final class HomeViewController: UIViewController {
             cameraView.topAnchor.constraint(equalTo: view.topAnchor),
             cameraView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+        
+        cameraView.delegate = self
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -30,5 +32,17 @@ final class HomeViewController: UIViewController {
         cameraView.start()
     }
 
+}
+
+extension HomeViewController: SLRGTKCameraViewDelegate {
+    func cameraViewDidInferSign(_ signInferenceResult: SignInferenceResult) {
+        print(signInferenceResult.inferences)
+    }
+    
+    func cameraViewDidThrowError(_ error: any Error) {
+        print(error.localizedDescription)
+    }
+    
+    
 }
 

@@ -1,5 +1,5 @@
 //
-//  GestureInferenceService.swift
+//  SignInferenceService.swift
 //  iOS-ToolKit
 //
 //  Created by Srivinayak Chaitanya Eshwa on 11/09/24.
@@ -9,29 +9,21 @@ import UIKit
 import Accelerate
 import TensorFlowLite
 
-struct InferenceResult{
-    let inferenceTime: Double
-    let inferences: [Inference]
-}
 
-/**
- Stores one formatted inference.
- */
-struct Inference {
-    let confidence: Float
-    let label: String
-}
 
 /// Information about a model file or labels file.
-struct FileInfo {
+struct AssetPath {
     let name: String
     let fileExtension: String
-}
-
-// Information about the model to be loaded.
-enum Model {
-    static let modelInfo: FileInfo = FileInfo(name: "model_2", fileExtension: "tflite")
-    static let labelsInfo: FileInfo = FileInfo(name: "signsList", fileExtension: "txt")
+    let bundle: Bundle = .main
+    
+    var resourcePathString: String? {
+        return bundle.path(forResource: name, ofType: fileExtension)
+    }
+    
+    var url: URL? {
+        return bundle.url(forResource: name, withExtension: fileExtension)
+    }
 }
 
 /**
@@ -39,7 +31,7 @@ enum Model {
  a given frame through the TensorFlow Lite Interpreter. It then formats the
  inferences obtained and returns the top N results for a successful inference.
  */
-final class GestureInferenceService {
+final class SignInferenceService {
     
     // MARK: Paremeters on which model was trained
     let batchSize = 1
@@ -56,37 +48,27 @@ final class GestureInferenceService {
     /// The current thread count used by the TensorFlow Lite Interpreter.
     let threadCount: Int
     
-    var labels: [String] = []
+    private var labels: [String] = []
+    
     private let resultCount = 1
     private let threshold = 0.5
     
     /// TensorFlow Lite `Interpreter` object for performing inference on a given model.
     private var interpreter: Interpreter
     
-    private let bgraPixel = (channels: 4, alphaComponent: 3, lastBgrComponent: 2)
-    private let rgbPixelChannels = 3
-    private let colorStrideValue = 10
-    
-    /// Information about the alpha component in RGBA data.
-    private let alphaComponent = (baseOffset: 4, moduloRemainder: 3)
-    
     // MARK: Initializer
     /**
      This is a failable initializer for ModelDataHandler. It successfully initializes an object of the class if the model file and labels file is found, labels can be loaded and the interpreter of TensorflowLite can be initialized successfully.
      */
-    init?(modelFileInfo: FileInfo, labelsFileInfo: FileInfo, threadCount: Int = 1) {
+    init(settings: SignInferenceSettings) throws {
         // TODO: Convert to try catch
         // Construct the path to the model file.
-        guard let modelPath = Bundle.main.path(
-            forResource: modelFileInfo.name,
-            ofType: modelFileInfo.fileExtension
-        ) else {
-            print("Failed to load the model file with name: \(modelFileInfo.name).")
-            return nil
+        guard let modelPath = settings.modelPath.resourcePathString else {
+            throw PathError.signInference
         }
         
         // Specify the options for the `Interpreter`.
-        self.threadCount = threadCount
+        self.threadCount = settings.threadCount
         var options = Interpreter.Options()
         options.threadCount = threadCount
         do {
@@ -95,21 +77,19 @@ final class GestureInferenceService {
             // Allocate memory for the model's input `Tensor`s.
             try interpreter.allocateTensors()
         } catch let error {
-            print("Failed to create the interpreter with error: \(error.localizedDescription)")
-            return nil
+            throw PassAlongError.tensorFlow(message: "Failed to create the interpreter with error: \(error.localizedDescription)")
         }
         
         // Opens and loads the classes listed in labels file
-        loadLabels(fromFileName: Model.labelsInfo.name, fileExtension: Model.labelsInfo.fileExtension)
+        try loadLabels(from: settings.labelsPath)
     }
     
-    // MARK: Methods for data preprocessing and post processing.
     /**
      Calls the TensorFlow Lite Interpreter methods
      to feed the input array into the input tensor and run inference
      on the pixel buffer.
      */
-    func runModel(using inputArray: [Float]) -> InferenceResult? {
+    func runModel(using inputArray: [Float]) -> SignInferenceResult? {
         
         let interval: TimeInterval
         let outputTensor: Tensor
@@ -151,11 +131,11 @@ final class GestureInferenceService {
         let topNInferences = getTopN(results: results)
         
         // Return the inference time and inference results.
-        return InferenceResult(inferenceTime: interval, inferences: topNInferences)
+        return SignInferenceResult(inferenceTime: interval, inferences: topNInferences)
     }
     
     /// Returns the top N inference results sorted in descending order.
-    private func getTopN(results: [Float]) -> [Inference] {
+    private func getTopN(results: [Float]) -> [SignInference] {
         // Create a zipped array of tuples [(labelIndex: Int, confidence: Float)].
         let zippedResults = zip(labels.indices, results)
         
@@ -163,28 +143,28 @@ final class GestureInferenceService {
         let sortedResults = zippedResults.sorted { $0.1 > $1.1 }.prefix(resultCount)
         
         // Return the `Inference` results.
-        return sortedResults.map { result in Inference(confidence: result.1, label: labels[result.0]) }
+        return sortedResults.map { result in SignInference(confidence: result.1, label: labels[result.0]) }
     }
     
     /**
      Loads the labels from the labels file and stores it in an instance variable
      */
-    func loadLabels(fromFileName fileName: String, fileExtension: String) {
+    func loadLabels(from labelsPath: AssetPath) throws {
         
-        guard let fileURL = Bundle.main.url(forResource: fileName, withExtension: fileExtension) else {
-            fatalError("Labels file not found in bundle. Please add a labels file with name \(fileName).\(fileExtension) and try again")
+        guard let labelsURL = labelsPath.url else {
+            throw PathError.labels
         }
+        
         do {
-            let contents = try String(contentsOf: fileURL, encoding: .utf8)
+            let contents = try String(contentsOf: labelsURL, encoding: .utf8)
             self.labels = contents.components(separatedBy: "\n")
             self.labels.removeAll { (label) -> Bool in
                 return label == ""
             }
         }
         catch {
-            fatalError("Labels file named \(fileName).\(fileExtension) cannot be read. Please add a valid labels file and try again.")
+            throw CorruptedFileError.labels(path: "\(labelsPath.name).\(labelsPath.fileExtension)")
         }
-        
     }
 }
 
