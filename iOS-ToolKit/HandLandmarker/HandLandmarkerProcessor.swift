@@ -1,5 +1,5 @@
 //
-//  HandLandmarkerDelegate.swift
+//  HandLandmarkerProcessor.swift
 //  iOS-ToolKit
 //
 //  Created by Srivinayak Chaitanya Eshwa on 12/09/24.
@@ -8,8 +8,7 @@
 import Foundation
 import MediaPipeTasksVision
 
-// MARK: ImageClassifierDelegate
-enum HandLandmarkerDelegate: CaseIterable {
+enum HandLandmarkerProcessor: CaseIterable {
     case GPU
     case CPU
     
@@ -22,7 +21,7 @@ enum HandLandmarkerDelegate: CaseIterable {
         }
     }
     
-    var delegate: Delegate {
+    var processor: Delegate {
         switch self {
         case .GPU:
             return .GPU
@@ -33,10 +32,10 @@ enum HandLandmarkerDelegate: CaseIterable {
     
     init?(name: String) {
         switch name {
-        case HandLandmarkerDelegate.CPU.name:
-            self = HandLandmarkerDelegate.CPU
-        case HandLandmarkerDelegate.GPU.name:
-            self = HandLandmarkerDelegate.GPU
+        case HandLandmarkerProcessor.CPU.name:
+            self = HandLandmarkerProcessor.CPU
+        case HandLandmarkerProcessor.GPU.name:
+            self = HandLandmarkerProcessor.GPU
         default:
             return nil
         }

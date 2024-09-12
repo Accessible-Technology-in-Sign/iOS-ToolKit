@@ -18,7 +18,6 @@
 		11593C4B2C8F2E62009AE8F7 /* HandLandmarkerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11593C4A2C8F2E62009AE8F7 /* HandLandmarkerService.swift */; };
 		11593C4D2C8F32EC009AE8F7 /* SLRGTKCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11593C4C2C8F32EC009AE8F7 /* SLRGTKCameraView.swift */; };
 		11593C4F2C901089009AE8F7 /* OverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11593C4E2C901089009AE8F7 /* OverlayView.swift */; };
-		11593C512C9010BD009AE8F7 /* DefaultConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11593C502C9010BD009AE8F7 /* DefaultConstants.swift */; };
 		11A525842C91747E0041FEC4 /* AVVideoLayerGravity+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A525832C91747E0041FEC4 /* AVVideoLayerGravity+Extensions.swift */; };
 		11A525862C91775F0041FEC4 /* hand_landmarker.task in Resources */ = {isa = PBXBuildFile; fileRef = 11A525852C91775F0041FEC4 /* hand_landmarker.task */; };
 		11A525882C928C0B0041FEC4 /* Buffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A525872C928C0B0041FEC4 /* Buffer.swift */; };
@@ -26,7 +25,7 @@
 		11A5258C2C9295BF0041FEC4 /* SignInferenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A5258B2C9295BF0041FEC4 /* SignInferenceService.swift */; };
 		11A5258F2C92AC3F0041FEC4 /* model_2.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 11A5258D2C92AC3F0041FEC4 /* model_2.tflite */; };
 		11A525902C92AC3F0041FEC4 /* signsList.txt in Resources */ = {isa = PBXBuildFile; fileRef = 11A5258E2C92AC3F0041FEC4 /* signsList.txt */; };
-		11BB61AB2C92CB170031AA35 /* HandLandmarkerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BB61AA2C92CB170031AA35 /* HandLandmarkerDelegate.swift */; };
+		11BB61AB2C92CB170031AA35 /* HandLandmarkerProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BB61AA2C92CB170031AA35 /* HandLandmarkerProcessor.swift */; };
 		11BB61AD2C92CB400031AA35 /* HandLandmarkerResultBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BB61AC2C92CB400031AA35 /* HandLandmarkerResultBundle.swift */; };
 		11BB61B02C92CE7F0031AA35 /* SignInferenceResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BB61AF2C92CE7F0031AA35 /* SignInferenceResult.swift */; };
 		11BB61B42C92D36F0031AA35 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BB61B32C92D36F0031AA35 /* Settings.swift */; };
@@ -51,7 +50,6 @@
 		11593C4A2C8F2E62009AE8F7 /* HandLandmarkerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandLandmarkerService.swift; sourceTree = "<group>"; };
 		11593C4C2C8F32EC009AE8F7 /* SLRGTKCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SLRGTKCameraView.swift; sourceTree = "<group>"; };
 		11593C4E2C901089009AE8F7 /* OverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayView.swift; sourceTree = "<group>"; };
-		11593C502C9010BD009AE8F7 /* DefaultConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultConstants.swift; sourceTree = "<group>"; };
 		11A525832C91747E0041FEC4 /* AVVideoLayerGravity+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVVideoLayerGravity+Extensions.swift"; sourceTree = "<group>"; };
 		11A525852C91775F0041FEC4 /* hand_landmarker.task */ = {isa = PBXFileReference; lastKnownFileType = file; path = hand_landmarker.task; sourceTree = "<group>"; };
 		11A525872C928C0B0041FEC4 /* Buffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Buffer.swift; sourceTree = "<group>"; };
@@ -59,7 +57,7 @@
 		11A5258B2C9295BF0041FEC4 /* SignInferenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInferenceService.swift; sourceTree = "<group>"; };
 		11A5258D2C92AC3F0041FEC4 /* model_2.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = model_2.tflite; sourceTree = "<group>"; };
 		11A5258E2C92AC3F0041FEC4 /* signsList.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = signsList.txt; sourceTree = "<group>"; };
-		11BB61AA2C92CB170031AA35 /* HandLandmarkerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandLandmarkerDelegate.swift; sourceTree = "<group>"; };
+		11BB61AA2C92CB170031AA35 /* HandLandmarkerProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandLandmarkerProcessor.swift; sourceTree = "<group>"; };
 		11BB61AC2C92CB400031AA35 /* HandLandmarkerResultBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandLandmarkerResultBundle.swift; sourceTree = "<group>"; };
 		11BB61AF2C92CE7F0031AA35 /* SignInferenceResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInferenceResult.swift; sourceTree = "<group>"; };
 		11BB61B32C92D36F0031AA35 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
@@ -102,7 +100,6 @@
 		111D4C7D2C915D5900561D0D /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				11593C502C9010BD009AE8F7 /* DefaultConstants.swift */,
 				11A525872C928C0B0041FEC4 /* Buffer.swift */,
 				11BB61B32C92D36F0031AA35 /* Settings.swift */,
 				11BB61B52C92D9CD0031AA35 /* SLRGTKError.swift */,
@@ -153,7 +150,7 @@
 			children = (
 				111D4C782C915D1500561D0D /* Overlay */,
 				11593C4A2C8F2E62009AE8F7 /* HandLandmarkerService.swift */,
-				11BB61AA2C92CB170031AA35 /* HandLandmarkerDelegate.swift */,
+				11BB61AA2C92CB170031AA35 /* HandLandmarkerProcessor.swift */,
 				11BB61AC2C92CB400031AA35 /* HandLandmarkerResultBundle.swift */,
 			);
 			path = HandLandmarker;
@@ -332,13 +329,12 @@
 				11593C4F2C901089009AE8F7 /* OverlayView.swift in Sources */,
 				11A5258C2C9295BF0041FEC4 /* SignInferenceService.swift in Sources */,
 				11BB61B92C92EAAC0031AA35 /* UIView+Fade.swift in Sources */,
-				11BB61AB2C92CB170031AA35 /* HandLandmarkerDelegate.swift in Sources */,
+				11BB61AB2C92CB170031AA35 /* HandLandmarkerProcessor.swift in Sources */,
 				11593C492C8F2B21009AE8F7 /* CameraFeedService.swift in Sources */,
 				11A5258A2C928F320041FEC4 /* UIImage.Orientation+Extensions.swift in Sources */,
 				11BB61AD2C92CB400031AA35 /* HandLandmarkerResultBundle.swift in Sources */,
 				11593C392C8F08C0009AE8F7 /* HomeViewController.swift in Sources */,
 				111D4C7C2C915D4200561D0D /* HandOverlay.swift in Sources */,
-				11593C512C9010BD009AE8F7 /* DefaultConstants.swift in Sources */,
 				11A525882C928C0B0041FEC4 /* Buffer.swift in Sources */,
 				11593C352C8F08C0009AE8F7 /* AppDelegate.swift in Sources */,
 				11BB61B02C92CE7F0031AA35 /* SignInferenceResult.swift in Sources */,

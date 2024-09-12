@@ -34,7 +34,7 @@ struct HandLandmarkerSettings {
     let minHandPresenceConfidence: Float
     let minTrackingConfidence: Float
     let modelPath: AssetPath
-    let handLandmarkerDelegate: HandLandmarkerDelegate
+    let handLandmarkerProcessor: HandLandmarkerProcessor
     
     init(lineWidth: CGFloat = 2,
          pointRadius: CGFloat = 5,
@@ -46,7 +46,7 @@ struct HandLandmarkerSettings {
          minHandPresenceConfidence: Float = 0.5,
          minTrackingConfidence: Float = 0.5,
          modelPath: AssetPath = AssetPath(name: "hand_landmarker", fileExtension: "task"),
-         handLandmarkerDelegate: HandLandmarkerDelegate = .GPU
+         handLandmarkerProcessor: HandLandmarkerProcessor = .GPU
      ) {
         self.lineWidth = lineWidth
         self.pointRadius = pointRadius
@@ -58,7 +58,7 @@ struct HandLandmarkerSettings {
         self.minHandPresenceConfidence = minHandPresenceConfidence
         self.minTrackingConfidence = minTrackingConfidence
         self.modelPath = modelPath
-        self.handLandmarkerDelegate = handLandmarkerDelegate
+        self.handLandmarkerProcessor = handLandmarkerProcessor
     }
     
     struct OverlaySettings {

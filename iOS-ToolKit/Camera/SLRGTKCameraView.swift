@@ -198,7 +198,7 @@ extension SLRGTKCameraView {
                 minHandDetectionConfidence: settings.handlandmarkerSettings.minHandDetectionConfidence,
                 minHandPresenceConfidence: settings.handlandmarkerSettings.minHandPresenceConfidence,
                 minTrackingConfidence: settings.handlandmarkerSettings.minTrackingConfidence,
-                delegate: settings.handlandmarkerSettings.handLandmarkerDelegate,
+                delegate: settings.handlandmarkerSettings.handLandmarkerProcessor,
                 resultsDelegate: self
             )
         } catch {
