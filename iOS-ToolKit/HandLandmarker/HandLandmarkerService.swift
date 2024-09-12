@@ -37,7 +37,7 @@ final class HandLandmarkerService: NSObject {
     private var minHandPresenceConfidence: Float
     private var minTrackingConfidence: Float
     var modelPath: String
-    private var delegate: HandLandmarkerDelegate
+    private var delegate: HandLandmarkerProcessor
     
     // MARK: - Custom Initializer
     init(modelPath: String?,
@@ -46,7 +46,7 @@ final class HandLandmarkerService: NSObject {
          minHandDetectionConfidence: Float,
          minHandPresenceConfidence: Float,
          minTrackingConfidence: Float,
-         delegate: HandLandmarkerDelegate,
+         delegate: HandLandmarkerProcessor,
          resultsDelegate: HandLandmarkerServiceLiveStreamDelegate) throws {
         guard let modelPath else {
             throw PathError.handLandmarker
@@ -72,7 +72,7 @@ final class HandLandmarkerService: NSObject {
         handLandmarkerOptions.minHandPresenceConfidence = minHandPresenceConfidence
         handLandmarkerOptions.minTrackingConfidence = minTrackingConfidence
         handLandmarkerOptions.baseOptions.modelAssetPath = modelPath
-        handLandmarkerOptions.baseOptions.delegate = delegate.delegate
+        handLandmarkerOptions.baseOptions.delegate = delegate.processor
         if runningMode == .liveStream {
             handLandmarkerOptions.handLandmarkerLiveStreamDelegate = self
         }
