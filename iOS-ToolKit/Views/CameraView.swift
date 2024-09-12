@@ -10,7 +10,8 @@ import MediaPipeTasksVision
 
 final class CameraView: UIView {
     
-    private lazy var cameraFeedService = CameraFeedService(previewView: self)
+    private let buffer: Buffer<HandLandmarkerResult> = Buffer(capacity: 60) // TODO: Make dynamic
+    private let numberOfPointsPerLandmark: Int = 21
     
     private let handLandmarkerServiceQueue = DispatchQueue(
         label: "com.wavinDev.cameraView.handLandmarkerServiceQueue",
@@ -35,6 +36,8 @@ final class CameraView: UIView {
         return label
     }()
     
+    private lazy var cameraFeedService = CameraFeedService(previewView: self)
+    
     private var _handLandmarkerService: HandLandmarkerService?
     private var handLandmarkerService: HandLandmarkerService? {
         get {
@@ -48,6 +51,8 @@ final class CameraView: UIView {
             }
         }
     }
+    
+    private let gestureInferenceService: GestureInferenceService? = GestureInferenceService(modelFileInfo: Model.modelInfo, labelsFileInfo: Model.labelsInfo)
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -78,6 +83,34 @@ final class CameraView: UIView {
             overlayView.trailingAnchor.constraint(equalTo: trailingAnchor),
             overlayView.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
+        
+        // TODO: Resume and Camera Unavailable
+        
+        setupBuffer()
+    }
+    
+    private func setupBuffer() {
+        // Called on a background queue
+        buffer.onCapacity { [weak self] handLandmarks in
+            guard let strongSelf = self else { return }
+            
+            var inferenceData: [Float] = []
+            handLandmarks.forEach { landmark in
+                guard let normalizedLandmarks = landmark.landmarks.first,
+                      normalizedLandmarks.count == strongSelf.numberOfPointsPerLandmark else {
+                    return // TODO: Keep this condition in sync with Android
+                }
+                
+                for i in 0 ..< strongSelf.numberOfPointsPerLandmark {
+                    inferenceData.append(normalizedLandmarks[i].x)
+                    inferenceData.append(normalizedLandmarks[i].y)
+                }
+            }
+            
+            let inferenceResults = strongSelf.gestureInferenceService?.runModel(using: inferenceData)
+            print(inferenceResults?.inferences)
+            
+        }
     }
 }
 
@@ -153,7 +186,8 @@ extension CameraView: CameraFeedServiceDelegate {
             self?.handLandmarkerService?.detectAsync(
                 sampleBuffer: sampleBuffer,
                 orientation: orientation,
-                timeStamps: Int(currentTimeMs))
+                timeStamps: Int(currentTimeMs)
+            )
         }
     }
     
@@ -192,6 +226,11 @@ extension CameraView: HandLandmarkerServiceLiveStreamDelegate {
             guard let strongSelf = self else { return }
             guard let handLandmarkerResult = result?.handLandmarkerResults.first as? HandLandmarkerResult else { return
             }
+            
+            if !handLandmarkerResult.landmarks.isEmpty {
+                strongSelf.buffer.addItem(handLandmarkerResult)
+            }
+            
             let imageSize = strongSelf.cameraFeedService.videoResolution
             let handOverlays = OverlayView.handOverlays(
                 fromMultipleHandLandmarks: handLandmarkerResult.landmarks,

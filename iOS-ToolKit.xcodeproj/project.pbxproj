@@ -21,6 +21,11 @@
 		11593C512C9010BD009AE8F7 /* DefaultConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11593C502C9010BD009AE8F7 /* DefaultConstants.swift */; };
 		11A525842C91747E0041FEC4 /* AVVideoLayerGravity+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A525832C91747E0041FEC4 /* AVVideoLayerGravity+Extensions.swift */; };
 		11A525862C91775F0041FEC4 /* hand_landmarker.task in Resources */ = {isa = PBXBuildFile; fileRef = 11A525852C91775F0041FEC4 /* hand_landmarker.task */; };
+		11A525882C928C0B0041FEC4 /* Buffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A525872C928C0B0041FEC4 /* Buffer.swift */; };
+		11A5258A2C928F320041FEC4 /* UIImage.Orientation+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A525892C928F320041FEC4 /* UIImage.Orientation+Extensions.swift */; };
+		11A5258C2C9295BF0041FEC4 /* GestureInferenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A5258B2C9295BF0041FEC4 /* GestureInferenceService.swift */; };
+		11A5258F2C92AC3F0041FEC4 /* model_2.tflite in Resources */ = {isa = PBXBuildFile; fileRef = 11A5258D2C92AC3F0041FEC4 /* model_2.tflite */; };
+		11A525902C92AC3F0041FEC4 /* signsList.txt in Resources */ = {isa = PBXBuildFile; fileRef = 11A5258E2C92AC3F0041FEC4 /* signsList.txt */; };
 		324D613A5B37A5189A3B1536 /* Pods_iOS_ToolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06017B99686EAB03C43453F5 /* Pods_iOS_ToolKit.framework */; };
 /* End PBXBuildFile section */
 
@@ -43,6 +48,11 @@
 		11593C502C9010BD009AE8F7 /* DefaultConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultConstants.swift; sourceTree = "<group>"; };
 		11A525832C91747E0041FEC4 /* AVVideoLayerGravity+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVVideoLayerGravity+Extensions.swift"; sourceTree = "<group>"; };
 		11A525852C91775F0041FEC4 /* hand_landmarker.task */ = {isa = PBXFileReference; lastKnownFileType = file; path = hand_landmarker.task; sourceTree = "<group>"; };
+		11A525872C928C0B0041FEC4 /* Buffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Buffer.swift; sourceTree = "<group>"; };
+		11A525892C928F320041FEC4 /* UIImage.Orientation+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage.Orientation+Extensions.swift"; sourceTree = "<group>"; };
+		11A5258B2C9295BF0041FEC4 /* GestureInferenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GestureInferenceService.swift; sourceTree = "<group>"; };
+		11A5258D2C92AC3F0041FEC4 /* model_2.tflite */ = {isa = PBXFileReference; lastKnownFileType = file; path = model_2.tflite; sourceTree = "<group>"; };
+		11A5258E2C92AC3F0041FEC4 /* signsList.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = signsList.txt; sourceTree = "<group>"; };
 		13BE0029E97CA7F910741B40 /* Pods-iOS-ToolKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iOS-ToolKit.release.xcconfig"; path = "Target Support Files/Pods-iOS-ToolKit/Pods-iOS-ToolKit.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -82,6 +92,7 @@
 			children = (
 				11593C482C8F2B21009AE8F7 /* CameraFeedService.swift */,
 				11593C4A2C8F2E62009AE8F7 /* HandLandmarkerService.swift */,
+				11A5258B2C9295BF0041FEC4 /* GestureInferenceService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -121,7 +132,11 @@
 				111D4C782C915D1500561D0D /* Overlay */,
 				11593C382C8F08C0009AE8F7 /* HomeViewController.swift */,
 				11A525832C91747E0041FEC4 /* AVVideoLayerGravity+Extensions.swift */,
+				11A525892C928F320041FEC4 /* UIImage.Orientation+Extensions.swift */,
 				11593C502C9010BD009AE8F7 /* DefaultConstants.swift */,
+				11A525872C928C0B0041FEC4 /* Buffer.swift */,
+				11A5258D2C92AC3F0041FEC4 /* model_2.tflite */,
+				11A5258E2C92AC3F0041FEC4 /* signsList.txt */,
 				11A525852C91775F0041FEC4 /* hand_landmarker.task */,
 				11593C3D2C8F08C1009AE8F7 /* Assets.xcassets */,
 				11593C3F2C8F08C1009AE8F7 /* LaunchScreen.storyboard */,
@@ -208,7 +223,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				11A525862C91775F0041FEC4 /* hand_landmarker.task in Resources */,
+				11A525902C92AC3F0041FEC4 /* signsList.txt in Resources */,
 				11593C3E2C8F08C1009AE8F7 /* Assets.xcassets in Resources */,
+				11A5258F2C92AC3F0041FEC4 /* model_2.tflite in Resources */,
 				11593C412C8F08C1009AE8F7 /* Base in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -263,10 +280,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				11593C4F2C901089009AE8F7 /* OverlayView.swift in Sources */,
+				11A5258C2C9295BF0041FEC4 /* GestureInferenceService.swift in Sources */,
 				11593C492C8F2B21009AE8F7 /* CameraFeedService.swift in Sources */,
+				11A5258A2C928F320041FEC4 /* UIImage.Orientation+Extensions.swift in Sources */,
 				11593C392C8F08C0009AE8F7 /* HomeViewController.swift in Sources */,
 				111D4C7C2C915D4200561D0D /* HandOverlay.swift in Sources */,
 				11593C512C9010BD009AE8F7 /* DefaultConstants.swift in Sources */,
+				11A525882C928C0B0041FEC4 /* Buffer.swift in Sources */,
 				11593C352C8F08C0009AE8F7 /* AppDelegate.swift in Sources */,
 				11593C4D2C8F32EC009AE8F7 /* CameraView.swift in Sources */,
 				111D4C7A2C915D1C00561D0D /* Line.swift in Sources */,

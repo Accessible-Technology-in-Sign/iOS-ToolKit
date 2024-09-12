@@ -373,20 +373,3 @@ extension CameraFeedService: AVCaptureVideoDataOutputSampleBufferDelegate {
         delegate?.didOutput(sampleBuffer: sampleBuffer, orientation: UIImage.Orientation.from(deviceOrientation: UIDevice.current.orientation))
     }
 }
-
-// MARK: UIImage.Orientation Extension
-extension UIImage.Orientation {
-    static func from(deviceOrientation: UIDeviceOrientation) -> UIImage.Orientation {
-        switch deviceOrientation {
-        case .portrait:
-            return .up
-        case .landscapeLeft:
-            return .left
-        case .landscapeRight:
-            return .right
-        default:
-            return .up
-        }
-    }
-}
-
