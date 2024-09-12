@@ -9,6 +9,8 @@ import UIKit
 import MediaPipeTasksVision
 
 protocol SLRGTKCameraViewDelegate: AnyObject {
+    func cameraViewDidBeginInferring()
+    func cameraViewDidSetupEngine()
     func cameraViewDidInferSign(_ signInferenceResult: SignInferenceResult)
     func cameraViewDidThrowError(_ error: Error)
 }
@@ -64,12 +66,12 @@ final class SLRGTKCameraView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setup()
+        setupUI()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        setup()
+        setupUI()
     }
     
     override func layoutSubviews() {
@@ -77,14 +79,10 @@ final class SLRGTKCameraView: UIView {
         cameraFeedService.updateVideoPreviewLayer(toFrame: bounds)
     }
     
-    private func setup() {
-        setupEngine()
-        setupUI()
-    }
-    
-    private func setupEngine() {
+    func setupEngine() {
         setupSignInferenceService()
-        setupBuffer()
+        configureBuffer()
+        delegate?.cameraViewDidSetupEngine()
     }
     
     private func setupUI() {
@@ -106,10 +104,17 @@ final class SLRGTKCameraView: UIView {
 
     }
     
-    private func setupBuffer() {
+    private func configureBuffer() {
         // Called on a background queue
         buffer.onCapacity { [weak self] handLandmarks in
             guard let strongSelf = self else { return }
+            
+            DispatchQueue.main.async {
+                strongSelf.delegate?.cameraViewDidBeginInferring()
+                if !strongSelf.settings.isContinuous {
+                    strongSelf.stop()
+                }
+            }
             
             var inferenceData: [Float] = []
             
@@ -128,8 +133,11 @@ final class SLRGTKCameraView: UIView {
             }
             
             if let inferenceResults = strongSelf.signInferenceService?.runModel(using: inferenceData) {
-                strongSelf.delegate?.cameraViewDidInferSign(inferenceResults)
+                DispatchQueue.main.async {
+                    strongSelf.delegate?.cameraViewDidInferSign(inferenceResults)
+                }
             }
+            
         }
     }
     
@@ -153,7 +161,7 @@ extension SLRGTKCameraView {
     private func reconfigureEngine() {
         clearAndInitializeHandLandmarkerService()
         buffer = Buffer(capacity: settings.signInferenceSettings.numberOfFramesPerInference)
-        setupBuffer()
+        configureBuffer()
         setupSignInferenceService()
     }
 }
@@ -204,6 +212,7 @@ extension SLRGTKCameraView {
     func stop() {
         cameraFeedService.stopSession()
         clearhandLandmarkerServiceOnSessionInterruption()
+        buffer.clear(keepingCapacity: false)
     }
     
     private func clearhandLandmarkerServiceOnSessionInterruption() {

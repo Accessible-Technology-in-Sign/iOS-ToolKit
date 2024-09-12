@@ -33,16 +33,6 @@ struct AssetPath {
  */
 final class SignInferenceService {
     
-    // MARK: Paremeters on which model was trained
-    let batchSize = 1
-    let wantedInputChannels = 3
-    let wantedInputWidth = 224
-    let wantedInputHeight = 224
-    let stdDeviation: Float = 127.0
-    let mean: Float = 1.0
-    
-    // MARK: Constants
-    let threadCountLimit: Int32 = 10
     
     // MARK: Instance Variables
     /// The current thread count used by the TensorFlow Lite Interpreter.

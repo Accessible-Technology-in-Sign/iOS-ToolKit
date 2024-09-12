@@ -9,10 +9,14 @@ import UIKit
 import MediaPipeTasksVision
 
 struct SLRGTKSettings {
+    
+    let isContinuous: Bool
+    
     let handlandmarkerSettings: HandLandmarkerSettings
     let signInferenceSettings: SignInferenceSettings
     
     static var defaultSettings: SLRGTKSettings = SLRGTKSettings(
+        isContinuous: false,
         handlandmarkerSettings: HandLandmarkerSettings(),
         signInferenceSettings: SignInferenceSettings()
     )
@@ -83,13 +87,13 @@ struct SignInferenceSettings {
          numberOfPointsPerLandmark: Int = 21,
          threadCount: Int = 1,
          modelPath: AssetPath = AssetPath(name: "model_2", fileExtension: "tflite"),
-         labelPath: AssetPath = AssetPath(name: "singsList", fileExtension: "txt")
+         labelsPath: AssetPath = AssetPath(name: "signsList", fileExtension: "txt")
     ) {
         self.numberOfFramesPerInference = numberOfFramesPerInference
         self.numberOfPointsPerLandmark = numberOfPointsPerLandmark
         self.threadCount = threadCount
         self.modelPath = modelPath
-        self.labelsPath = modelPath
+        self.labelsPath = labelsPath
     }
 }
     
