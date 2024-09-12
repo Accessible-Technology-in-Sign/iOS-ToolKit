@@ -30,7 +30,7 @@ protocol HandLandmarkerServiceVideoDelegate: AnyObject {
 
 
 // Initializes and calls the MediaPipe APIs for detection.
-class HandLandmarkerService: NSObject {
+final class HandLandmarkerService: NSObject {
     
     weak var liveStreamDelegate: HandLandmarkerServiceLiveStreamDelegate?
     weak var videoDelegate: HandLandmarkerServiceVideoDelegate?

@@ -22,6 +22,6 @@ struct DefaultConstants {
   static var minHandPresenceConfidence: Float = 0.5
   static var minTrackingConfidence: Float = 0.5
   static let modelPath: String? = Bundle.main.path(forResource: "hand_landmarker", ofType: "task")
-  static let delegate: HandLandmarkerDelegate = .CPU
+  static let delegate: HandLandmarkerDelegate = .GPU
 }
 
