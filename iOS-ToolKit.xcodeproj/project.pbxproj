@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		111D4C7A2C915D1C00561D0D /* Line.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111D4C792C915D1C00561D0D /* Line.swift */; };
 		111D4C7C2C915D4200561D0D /* HandOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111D4C7B2C915D4200561D0D /* HandOverlay.swift */; };
+		1128EB412C939D2600D632FC /* AssetPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1128EB402C939D2600D632FC /* AssetPath.swift */; };
 		11593C352C8F08C0009AE8F7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11593C342C8F08C0009AE8F7 /* AppDelegate.swift */; };
 		11593C372C8F08C0009AE8F7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11593C362C8F08C0009AE8F7 /* SceneDelegate.swift */; };
 		11593C392C8F08C0009AE8F7 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11593C382C8F08C0009AE8F7 /* HomeViewController.swift */; };
@@ -39,6 +40,7 @@
 		08DDF93D548F041A7EC4225B /* Pods-iOS-ToolKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iOS-ToolKit.debug.xcconfig"; path = "Target Support Files/Pods-iOS-ToolKit/Pods-iOS-ToolKit.debug.xcconfig"; sourceTree = "<group>"; };
 		111D4C792C915D1C00561D0D /* Line.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Line.swift; sourceTree = "<group>"; };
 		111D4C7B2C915D4200561D0D /* HandOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandOverlay.swift; sourceTree = "<group>"; };
+		1128EB402C939D2600D632FC /* AssetPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetPath.swift; sourceTree = "<group>"; };
 		11593C312C8F08C0009AE8F7 /* iOS-ToolKit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iOS-ToolKit.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		11593C342C8F08C0009AE8F7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		11593C362C8F08C0009AE8F7 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -100,6 +102,7 @@
 		111D4C7D2C915D5900561D0D /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				1128EB402C939D2600D632FC /* AssetPath.swift */,
 				11A525872C928C0B0041FEC4 /* Buffer.swift */,
 				11BB61B32C92D36F0031AA35 /* Settings.swift */,
 				11BB61B52C92D9CD0031AA35 /* SLRGTKError.swift */,
@@ -345,6 +348,7 @@
 				11593C4B2C8F2E62009AE8F7 /* HandLandmarkerService.swift in Sources */,
 				11BB61B42C92D36F0031AA35 /* Settings.swift in Sources */,
 				11BB61B62C92D9CD0031AA35 /* SLRGTKError.swift in Sources */,
+				1128EB412C939D2600D632FC /* AssetPath.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
