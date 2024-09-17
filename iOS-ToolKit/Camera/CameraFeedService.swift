@@ -261,6 +261,17 @@ final class CameraFeedService: NSObject {
         }
         
         do {
+            try camera.lockForConfiguration()
+            
+            if let format = camera.formats.first(where: {format in let frameRates = format.videoSupportedFrameRateRanges
+                return frameRates.contains { $0.maxFrameRate >= 60}}) {
+                camera.activeFormat = format
+                camera.activeVideoMinFrameDuration = CMTimeMake(value: 1, timescale: 60)
+                camera.activeVideoMaxFrameDuration = CMTimeMake(value: 1, timescale: 60)
+            }
+            
+            camera.unlockForConfiguration()
+            
             let videoDeviceInput = try AVCaptureDeviceInput(device: camera)
             if session.canAddInput(videoDeviceInput) {
                 session.addInput(videoDeviceInput)
