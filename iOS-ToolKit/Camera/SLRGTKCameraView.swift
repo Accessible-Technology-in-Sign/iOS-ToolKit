@@ -226,7 +226,7 @@ extension SLRGTKCameraView {
             handLandmarks.forEach { landmark in
                 guard let normalizedLandmarks = landmark.landmarks.first,
                       normalizedLandmarks.count == numberOfPointsPerLandmark else {
-                    strongSelf.delegate?.cameraViewDidThrowError(<#T##error: any Error##any Error#>)
+                    strongSelf.delegate?.cameraViewDidThrowError(DependencyError.landmarkStructure)
                     return // TODO: Keep this condition in sync with Android
                 }
                 
