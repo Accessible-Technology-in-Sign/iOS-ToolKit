@@ -254,27 +254,17 @@ final class CameraFeedService: NSObject {
      */
     private func addVideoDeviceInput() -> Bool {
         
-        /**Tries to get the default back camera.
+        /**Tries to get the default front camera.
          */
-        guard let camera  = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: cameraPosition) else {
+        guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: cameraPosition) else {
             return false
         }
         
         do {
-            try camera.lockForConfiguration()
-            
-            if let format = camera.formats.first(where: {format in let frameRates = format.videoSupportedFrameRateRanges
-                return frameRates.contains { $0.maxFrameRate >= 60}}) {
-                camera.activeFormat = format
-                camera.activeVideoMinFrameDuration = CMTimeMake(value: 1, timescale: 60)
-                camera.activeVideoMaxFrameDuration = CMTimeMake(value: 1, timescale: 60)
-            }
-            
-            camera.unlockForConfiguration()
-            
             let videoDeviceInput = try AVCaptureDeviceInput(device: camera)
             if session.canAddInput(videoDeviceInput) {
                 session.addInput(videoDeviceInput)
+                try setFrameRate(of: videoDeviceInput)
                 return true
             }
             else {
@@ -284,6 +274,36 @@ final class CameraFeedService: NSObject {
         catch {
             fatalError("Cannot create video device input")
         }
+    }
+    
+    private func setFrameRate(of videoDeviceInput: AVCaptureDeviceInput) throws {
+        try videoDeviceInput.device.lockForConfiguration()
+        
+        let formats = videoDeviceInput.device.formats
+        var bestFormat: AVCaptureDevice.Format?
+        var maxResolution: CMVideoDimensions = CMVideoDimensions(width: 0, height: 0)
+
+        for format in formats {
+            let dimensions = CMVideoFormatDescriptionGetDimensions(format.formatDescription)
+            
+            // Check the supported frame rates for this format
+            let frameRateRanges = format.videoSupportedFrameRateRanges
+            let supports60fps = frameRateRanges.contains { $0.maxFrameRate >= 60 }
+            
+            // Find the highest resolution format that supports 60 fps
+            if supports60fps && (dimensions.width * dimensions.height > maxResolution.width * maxResolution.height) {
+                maxResolution = dimensions
+                bestFormat = format
+            }
+        }
+        
+        if let bestFormat {
+            videoDeviceInput.device.activeFormat = bestFormat
+            videoDeviceInput.device.activeVideoMinFrameDuration = CMTimeMake(value: 1, timescale: 60)
+            videoDeviceInput.device.activeVideoMaxFrameDuration = CMTimeMake(value: 1, timescale: 60)
+        }
+        
+        videoDeviceInput.device.unlockForConfiguration()
     }
     
     /**
