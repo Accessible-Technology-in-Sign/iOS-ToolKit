@@ -9,23 +9,6 @@ import UIKit
 import Accelerate
 import TensorFlowLite
 
-
-
-/// Information about a model file or labels file.
-struct AssetPath {
-    let name: String
-    let fileExtension: String
-    let bundle: Bundle = .main
-    
-    var resourcePathString: String? {
-        return bundle.path(forResource: name, ofType: fileExtension)
-    }
-    
-    var url: URL? {
-        return bundle.url(forResource: name, withExtension: fileExtension)
-    }
-}
-
 /**
  This class handles all data preprocessing and makes calls to run inference on
  a given frame through the TensorFlow Lite Interpreter. It then formats the
