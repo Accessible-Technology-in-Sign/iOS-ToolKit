@@ -105,40 +105,7 @@ final class SLRGTKCameraView: UIView {
     }
     
     private func configureBuffer() {
-        // Called on a background queue
-        buffer.onCapacity { [weak self] handLandmarks in
-            guard let strongSelf = self else { return }
-            
-            DispatchQueue.main.async {
-                strongSelf.delegate?.cameraViewDidBeginInferring()
-                if !strongSelf.settings.isContinuous {
-                    strongSelf.stop()
-                }
-            }
-            
-            var inferenceData: [Float] = []
-            
-            let numberOfPointsPerLandmark = strongSelf.settings.signInferenceSettings.numberOfPointsPerLandmark
-            
-            handLandmarks.forEach { landmark in
-                guard let normalizedLandmarks = landmark.landmarks.first,
-                      normalizedLandmarks.count == numberOfPointsPerLandmark else {
-                    return // TODO: Keep this condition in sync with Android
-                }
-                
-                for i in 0 ..< numberOfPointsPerLandmark {
-                    inferenceData.append(normalizedLandmarks[i].x)
-                    inferenceData.append(normalizedLandmarks[i].y)
-                }
-            }
-            
-            if let inferenceResults = strongSelf.signInferenceService?.runModel(using: inferenceData) {
-                DispatchQueue.main.async {
-                    strongSelf.delegate?.cameraViewDidInferSign(inferenceResults)
-                }
-            }
-            
-        }
+        buffer = Buffer(capacity: settings.signInferenceSettings.numberOfFramesPerInference)
     }
     
     private func setupSignInferenceService() {
@@ -160,7 +127,6 @@ extension SLRGTKCameraView {
     
     private func reconfigureEngine() {
         clearAndInitializeHandLandmarkerService()
-        buffer = Buffer(capacity: settings.signInferenceSettings.numberOfFramesPerInference)
         configureBuffer()
         setupSignInferenceService()
     }
@@ -217,6 +183,66 @@ extension SLRGTKCameraView {
     
     private func clearhandLandmarkerServiceOnSessionInterruption() {
         handLandmarkerService = nil
+    }
+}
+
+// MARK: - Detection
+extension SLRGTKCameraView {
+    
+    func detect() {
+        
+        DispatchQueue.global(qos: .background).async { [weak self] in
+            guard let strongSelf = self else { return }
+            
+            var handLandmarks = strongSelf.buffer.items
+            
+            DispatchQueue.main.async { [weak self] in
+                guard let strongSelf = self else { return }
+                strongSelf.delegate?.cameraViewDidBeginInferring()
+                if !strongSelf.settings.isContinuous {
+                    strongSelf.stop()
+                }
+            }
+            
+            var inferenceData: [Float] = []
+            
+            let numberOfPointsPerLandmark = strongSelf.settings.signInferenceSettings.numberOfPointsPerLandmark
+            let numberOfFramesPerInference = strongSelf.settings.signInferenceSettings.numberOfFramesPerInference
+            
+            guard !handLandmarks.isEmpty else {
+                strongSelf.delegate?.cameraViewDidThrowError(DependencyError.noLandmarks)
+                return
+            }
+            
+            if handLandmarks.count < numberOfFramesPerInference {
+                let midPoint = handLandmarks.count / 2
+                
+                for _ in 0 ..< (numberOfFramesPerInference - handLandmarks.count) {
+                    handLandmarks.append(handLandmarks[midPoint])
+                }
+                
+            }
+            
+            handLandmarks.forEach { landmark in
+                guard let normalizedLandmarks = landmark.landmarks.first,
+                      normalizedLandmarks.count == numberOfPointsPerLandmark else {
+                    strongSelf.delegate?.cameraViewDidThrowError(DependencyError.landmarkStructure)
+                    return // TODO: Keep this condition in sync with Android
+                }
+                
+                for i in 0 ..< numberOfPointsPerLandmark {
+                    inferenceData.append(normalizedLandmarks[i].x)
+                    inferenceData.append(normalizedLandmarks[i].y)
+                }
+            }
+            
+            if let inferenceResults = strongSelf.signInferenceService?.runModel(using: inferenceData) {
+                DispatchQueue.main.async { [weak self] in
+                    guard let strongSelf = self else { return }
+                    strongSelf.delegate?.cameraViewDidInferSign(inferenceResults)
+                }
+            }
+        }
     }
 }
 
