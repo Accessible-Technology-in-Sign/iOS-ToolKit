@@ -48,8 +48,8 @@ final class HomeViewController: UIViewController {
         NSLayoutConstraint.activate([
             stackView.leadingAnchor.constraint(equalTo: view.readableContentGuide.leadingAnchor, constant: 20),
             stackView.trailingAnchor.constraint(equalTo: view.readableContentGuide.trailingAnchor, constant: -20),
+            stackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
             stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
         
         cameraView.isHidden = true
@@ -65,11 +65,25 @@ final class HomeViewController: UIViewController {
         
         cameraView.delegate = self
         
-        startButton.addTarget(self, action: #selector(didTapStartButton(_:)), for: .touchUpInside)
+        startButton.addTarget(self, action: #selector(didTouchDownInsideStartButton(_:)), for: .touchDown)
+        startButton.addTarget(self, action: #selector(didTouchUpStartButton(_:)), for: .touchUpInside)
+        startButton.addTarget(self, action: #selector(didTouchUpStartButton(_:)), for: .touchUpOutside)
     }
     
-    @objc private func didTapStartButton(_ sender: UIButton) {
+    @objc private func didTouchDownInsideStartButton(_ sender: UIButton) {
         cameraView.setupEngine()
+        cameraView.fadeIn() {
+            self.cameraView.start()
+        }
+        stackView.fadeOut(modifiesHiddenBehaviour: false)
+    }
+    
+    @objc private func didTouchUpStartButton(_ sender: UIButton) {
+        cameraView.detect()
+        cameraView.fadeOut()
+        stackView.fadeIn(modifiesHiddenBehaviour: false)
+        startButton.isEnabled = false
+        inferenceLabel.text = String(localized: "Processing")
     }
 
 }
@@ -77,30 +91,32 @@ final class HomeViewController: UIViewController {
 extension HomeViewController: SLRGTKCameraViewDelegate {
     
     func cameraViewDidSetupEngine() {
-        cameraView.fadeIn() {
-            self.cameraView.start()
-        }
-        stackView.fadeOut()
+        print("Did setup engine")
     }
     
     func cameraViewDidBeginInferring() {
-        cameraView.stop()
-        cameraView.fadeOut()
-        stackView.fadeIn()
-        startButton.isEnabled = false
         inferenceLabel.text = String(localized: "Inferring")
     }
     
     func cameraViewDidInferSign(_ signInferenceResult: SignInferenceResult) {
         inferenceLabel.text = signInferenceResult.inferences.first?.label
+        resetDetectButton()
+    }
+    
+    func cameraViewDidThrowError(_ error: any Error) {
+        DispatchQueue.main.async {
+            self.inferenceLabel.text = "Error!"
+            self.resetDetectButton()
+        }
+        
+        print(error.localizedDescription)
+    }
+    
+    private func resetDetectButton() {
         var buttonConfiguration = startButton.configuration
         buttonConfiguration?.title = String(localized: "Detect Again")
         startButton.configuration = buttonConfiguration
         startButton.isEnabled = true
-    }
-    
-    func cameraViewDidThrowError(_ error: any Error) {
-        print(error.localizedDescription)
     }
 }
 

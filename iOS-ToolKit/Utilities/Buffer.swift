@@ -11,32 +11,28 @@ final class Buffer<T> {
     
     private let bufferQueue = DispatchQueue(label: "com.wavinDev.Buffer", qos: .background, attributes: .concurrent)
     
-    private var items: [T] = []
+    private var _items: [T] = []
     private var capacity: Int
-    private var onCapacityReached: (([T]) -> ())?
+    
+    var items: [T] {
+        bufferQueue.sync {
+            return _items.suffix(capacity)
+        }
+    }
     
     init(capacity: Int) {
         self.capacity = capacity
     }
     
-    func onCapacity(perform onCapacityHandler: @escaping ([T]) -> ()) {
-        self.onCapacityReached = onCapacityHandler
-    }
-    
     func addItem(_ item: T) {
         bufferQueue.async(flags: .barrier) {
-            self.items.append(item)
-            if self.items.count == self.capacity {
-                self.onCapacityReached?(self.items)
-                // keepingCapacity to true since items will need 60 entries for next inference
-                self.items.removeAll(keepingCapacity: true)
-            }
+            self._items.append(item)
         }
     }
     
     func clear(keepingCapacity: Bool = false) {
         bufferQueue.async(flags: .barrier) {
-            self.items.removeAll(keepingCapacity: keepingCapacity)
+            self._items.removeAll(keepingCapacity: keepingCapacity)
         }
     }
     

@@ -99,3 +99,29 @@ enum CameraError: SLRGTKError {
         return errorMessage
     }
 }
+
+enum DependencyError: SLRGTKError {
+    case noLandmarks
+    case landmarkStructure
+    
+    var title: String {
+        switch self {
+        case .noLandmarks, .landmarkStructure:
+            return String(localized: "Hand Landmarking failed")
+        
+        }
+    }
+    
+    var errorMessage: String {
+        switch self {
+        case .noLandmarks:
+            return String(localized: "Hand Landmarking output is empty. Please contact our developers")
+        case .landmarkStructure:
+            return String(localized: "Hand Landmarking output is corrupted. Please contact our developers")
+        }
+    }
+    
+    var errorDescription: String? {
+        return errorMessage
+    }
+}

@@ -8,26 +8,29 @@
 import UIKit
 
 extension UIView {
-    func fadeIn(in duration: TimeInterval = 0.2, onCompletion: (() -> Void)? = nil) {
+    func fadeIn(in duration: TimeInterval = 0.2, modifiesHiddenBehaviour: Bool = true, onCompletion: (() -> Void)? = nil) {
         alpha = 0
-        isHidden = false
+        if modifiesHiddenBehaviour {
+            isHidden = false
+        }
         UIView.animate(withDuration: duration, animations: {
             self.alpha = 1
             
         },
         completion: { (value: Bool) in
-            if let complete = onCompletion { complete() }
+            onCompletion?()
         })
     }
 
-    func fadeOut(in duration: TimeInterval = 0.2, onCompletion: (() -> Void)? = nil) {
+    func fadeOut(in duration: TimeInterval = 0.2, modifiesHiddenBehaviour: Bool = true, onCompletion: (() -> Void)? = nil) {
         UIView.animate(withDuration: duration, animations: {
             self.alpha = 0
-            
         },
         completion: { [weak self] (value: Bool) in
-            self?.isHidden = true
-            if let complete = onCompletion { complete() }
+            if modifiesHiddenBehaviour {
+                self?.isHidden = true
+            }
+            onCompletion?()
         })
     }
 }
