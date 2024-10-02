@@ -11,7 +11,7 @@ Step 2:
  
 Step 3:
 * Come to this view in the app and configure the Team and Bundle Indentifier
-￼
+
 Step 4:
 * 4a: If needed, download brew like so:
     - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
