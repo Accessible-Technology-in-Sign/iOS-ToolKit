@@ -4,9 +4,11 @@
 Step 1:
 * Make sure your phone is in development mode
     - https://docs.expo.dev/guides/ios-developer-mode/
+ 
 Step 2:
 * Make sure you have an account tied in Xcode using your apple_id or phone number along with the password
     - Press Command + , and go to accounts
+ 
 Step 3:
 * Come to this view in the app and configure the Team and Bundle Indentifier
 ￼
