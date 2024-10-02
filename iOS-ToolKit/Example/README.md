@@ -1,4 +1,39 @@
 ### Sign Language Recognition Gesture Toolkit
+# Prerequisites:
+
+Step 1:
+* Make sure your phone is in development mode
+    - https://docs.expo.dev/guides/ios-developer-mode/
+Step 2:
+* Make sure you have an account tied in Xcode using your apple_id or phone number along with the password
+    - Press Command + , and go to accounts
+Step 3:
+* Come to this view in the app and configure the Team and Bundle Indentifier
+￼
+Step 4:
+* 4a: If needed, download brew like so:
+    - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+* 4b: if needed, download cocoa pods like so:
+    - brew install cocoapods
+
+Step 5:
+* In the terminal, cd until you get to root directory of your Xcode project 
+    - if you see the file with the .xcodeproj extension you’re in the right place
+
+Step 6: 
+* Run the following to get the dependency:
+    - pod install
+    - This could take a while just be patient! It’ll give you a clear success message after its done
+
+Step 7:
+* Open the project in Xcode with the following command:
+    - open <filename>.xcworkspace
+
+Step 8:
+* Click build and then open your phone and enter your computer password if prompted.
+    - You’ll get an error where it doesn’t trust the app. Do the following on your phone: 
+    - Go to settings > VPN & Device management > click on your developer app and click trust
 
 # How the HomeViewController works
 
