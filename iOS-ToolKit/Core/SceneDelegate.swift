@@ -18,8 +18,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
+        let words: Set<String> = ["DOG", "CAT", "APPLE", "JUMP", "QUIET"]
+        let boggleVC = BoggleHomeViewController(words: words, gridSize: 5)
+        
         let window = UIWindow(windowScene: windowScene)
-        window.rootViewController = HomeViewController()
+        window.rootViewController = boggleVC
         window.makeKeyAndVisible()
         self.window = window
     }

@@ -33,6 +33,7 @@
 		11BB61B62C92D9CD0031AA35 /* SLRGTKError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BB61B52C92D9CD0031AA35 /* SLRGTKError.swift */; };
 		11BB61B92C92EAAC0031AA35 /* UIView+Fade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BB61B82C92EAAC0031AA35 /* UIView+Fade.swift */; };
 		324D613A5B37A5189A3B1536 /* Pods_iOS_ToolKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06017B99686EAB03C43453F5 /* Pods_iOS_ToolKit.framework */; };
+		F10A8D422CAD028C00463D5F /* BoggleHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10A8D412CAD028C00463D5F /* BoggleHomeViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -66,6 +67,7 @@
 		11BB61B52C92D9CD0031AA35 /* SLRGTKError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SLRGTKError.swift; sourceTree = "<group>"; };
 		11BB61B82C92EAAC0031AA35 /* UIView+Fade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Fade.swift"; sourceTree = "<group>"; };
 		13BE0029E97CA7F910741B40 /* Pods-iOS-ToolKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iOS-ToolKit.release.xcconfig"; path = "Target Support Files/Pods-iOS-ToolKit/Pods-iOS-ToolKit.release.xcconfig"; sourceTree = "<group>"; };
+		F10A8D412CAD028C00463D5F /* BoggleHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoggleHomeViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -191,6 +193,7 @@
 			children = (
 				11593C382C8F08C0009AE8F7 /* HomeViewController.swift */,
 				11BB61B82C92EAAC0031AA35 /* UIView+Fade.swift */,
+				F10A8D412CAD028C00463D5F /* BoggleHomeViewController.swift */,
 			);
 			path = Example;
 			sourceTree = "<group>";
@@ -345,6 +348,7 @@
 				111D4C7A2C915D1C00561D0D /* Line.swift in Sources */,
 				11A525842C91747E0041FEC4 /* AVVideoLayerGravity+Extensions.swift in Sources */,
 				11593C372C8F08C0009AE8F7 /* SceneDelegate.swift in Sources */,
+				F10A8D422CAD028C00463D5F /* BoggleHomeViewController.swift in Sources */,
 				11593C4B2C8F2E62009AE8F7 /* HandLandmarkerService.swift in Sources */,
 				11BB61B42C92D36F0031AA35 /* Settings.swift in Sources */,
 				11BB61B62C92D9CD0031AA35 /* SLRGTKError.swift in Sources */,
@@ -493,7 +497,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = S2LV3T7DFP;
+				DEVELOPMENT_TEAM = XYTS68TW96;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "iOS-ToolKit/Info.plist";
@@ -508,7 +512,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.wavinDev.iOS-ToolKit";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ccg.iOS-ToolKit";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -524,7 +528,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = S2LV3T7DFP;
+				DEVELOPMENT_TEAM = XYTS68TW96;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "iOS-ToolKit/Info.plist";
@@ -539,7 +543,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.wavinDev.iOS-ToolKit";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ccg.iOS-ToolKit";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
