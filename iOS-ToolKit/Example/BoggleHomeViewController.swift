@@ -4,7 +4,6 @@
 //
 //  Created by Unnathi Utpal Kumar on 10/02/24.
 //
-
 import UIKit
 
 final class BoggleHomeViewController: UIViewController {
@@ -12,8 +11,11 @@ final class BoggleHomeViewController: UIViewController {
     private var boardButtons: [[UIButton]] = []
     private var currentWord: String = ""
     private let game: BoggleGame
-    private var wordLabel: UILabel!
+    private var inferenceLabel: UILabel!
     private var submitButton: UIButton = UIButton()
+    private var signButton: UIButton = UIButton()
+    private let cameraView = SLRGTKCameraView()
+    private var containerView = UIView()
     
     private var currSubmission: [(Int, Int)] = []
     
@@ -31,9 +33,42 @@ final class BoggleHomeViewController: UIViewController {
         super.viewDidLoad()
         
         view.backgroundColor = .white
+        
+        setupCameraView()
+        setupContainerView()
+        
         setupBoard()
         setupWordLabel()
         setupSubmitButton()
+        setupSignButton()
+    }
+    
+    private func setupCameraView() {
+            cameraView.isHidden = true
+            view.addSubview(cameraView)
+            cameraView.translatesAutoresizingMaskIntoConstraints = false
+            
+            NSLayoutConstraint.activate([
+                cameraView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                cameraView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                cameraView.topAnchor.constraint(equalTo: view.topAnchor),
+                cameraView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            ])
+            
+            cameraView.delegate = self
+    }
+    
+    private func setupContainerView() {
+            containerView.backgroundColor = .clear
+            view.addSubview(containerView)
+            containerView.translatesAutoresizingMaskIntoConstraints = false
+            
+            NSLayoutConstraint.activate([
+                containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                containerView.topAnchor.constraint(equalTo: view.topAnchor),
+                containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            ])
     }
     
     private func setupBoard() {
@@ -52,16 +87,16 @@ final class BoggleHomeViewController: UIViewController {
                 button.tag = row * gridSize + col
                 button.addTarget(self, action: #selector(letterTapped(_:)), for: .touchUpInside)
                 
-                view.addSubview(button)
+                containerView.addSubview(button)
                 button.translatesAutoresizingMaskIntoConstraints = false
                 
                 button.widthAnchor.constraint(equalToConstant: buttonSize).isActive = true
                 button.heightAnchor.constraint(equalToConstant: buttonSize).isActive = true
                 
-                let xPosition = CGFloat(col) * (buttonSize + padding)
+                let xPosition = CGFloat(col) * (buttonSize + padding) + 195
                 let yPosition = CGFloat(row) * (buttonSize + padding) + 100
-                button.leftAnchor.constraint(equalTo: view.leftAnchor, constant: xPosition + (view.bounds.width - boardSize) / 2).isActive = true
-                button.topAnchor.constraint(equalTo: view.topAnchor, constant: yPosition).isActive = true
+                button.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: xPosition + (containerView.bounds.width - boardSize) / 2).isActive = true
+                button.topAnchor.constraint(equalTo: containerView.topAnchor, constant: yPosition).isActive = true
                 
                 buttonRow.append(button)
             }
@@ -70,16 +105,16 @@ final class BoggleHomeViewController: UIViewController {
     }
     
     private func setupWordLabel() {
-        wordLabel = UILabel()
-        wordLabel.textAlignment = .center
-        wordLabel.font = UIFont.boldSystemFont(ofSize: 32)
-        wordLabel.text = "Word: "
-        wordLabel.textColor = .black
+        inferenceLabel = UILabel()
+        inferenceLabel.textAlignment = .center
+        inferenceLabel.font = UIFont.boldSystemFont(ofSize: 32)
+        inferenceLabel.text = "Word: "
+        inferenceLabel.textColor = .black
         
-        view.addSubview(wordLabel)
-        wordLabel.translatesAutoresizingMaskIntoConstraints = false
-        wordLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        wordLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 40).isActive = true
+        containerView.addSubview(inferenceLabel)
+        inferenceLabel.translatesAutoresizingMaskIntoConstraints = false
+        inferenceLabel.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
+        inferenceLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 40).isActive = true
     }
     
     private func setupSubmitButton() {
@@ -89,25 +124,71 @@ final class BoggleHomeViewController: UIViewController {
         submitButton.setTitleColor(.white, for: .normal)
         submitButton.addTarget(self, action: #selector(submitWord), for: .touchUpInside)
 
-        view.addSubview(submitButton)
+        containerView.addSubview(submitButton)
         submitButton.translatesAutoresizingMaskIntoConstraints = false
-        submitButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        submitButton.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
         
         let buttonSize: CGFloat = 60
         let padding: CGFloat = 10
         let boardHeight = CGFloat(gridSize) * buttonSize + CGFloat(gridSize - 1) * padding
         
-        submitButton.topAnchor.constraint(equalTo: view.topAnchor, constant: boardHeight + 150).isActive = true
+        submitButton.topAnchor.constraint(equalTo: containerView.topAnchor, constant: boardHeight + 150).isActive = true
         submitButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
         submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
+    
+    private func setupSignButton() {
+        signButton.setTitle("Sign", for: .normal)
+        signButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 24)
+        signButton.backgroundColor = .blue
+        signButton.setTitleColor(.white, for: .normal)
+        signButton.addTarget(self, action: #selector(didTouchDownInsideStartButton(_:)), for: .touchDown)
+        signButton.addTarget(self, action: #selector(didTouchUpStartButton(_:)), for: .touchUpInside)
+        signButton.addTarget(self, action: #selector(didTouchUpStartButton(_:)), for: .touchUpOutside)
+
+        containerView.addSubview(signButton)
+        signButton.translatesAutoresizingMaskIntoConstraints = false
+        signButton.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
+        
+        signButton.topAnchor.constraint(equalTo: submitButton.bottomAnchor, constant: 20).isActive = true
+        signButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        signButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+    }
+    
+    private func setupInferenceLabel() {
+        let inferenceLabel = UILabel()
+        inferenceLabel.text = String(localized: "Press button to detect sign")
+        inferenceLabel.textAlignment = .center
+        
+        signButton.topAnchor.constraint(equalTo: signButton.bottomAnchor, constant: 20).isActive = true
+        signButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        signButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+    }
+    
+    @objc private func didTouchDownInsideStartButton(_ sender: UIButton) {
+        cameraView.setupEngine()
+        cameraView.fadeIn() {
+            self.cameraView.start()
+        }
+        containerView.fadeOut(modifiesHiddenBehaviour: false)
+    }
+    
+    @objc private func didTouchUpStartButton(_ sender: UIButton) {
+        cameraView.detect()
+        cameraView.fadeOut()
+        containerView.fadeIn(modifiesHiddenBehaviour: false)
+        signButton.isEnabled = false
+        inferenceLabel.text = String(localized: "Processing")
+    }
+    
+    
     
     @objc private func letterTapped(_ sender: UIButton) {
         let row = sender.tag / gridSize
         let col = sender.tag % gridSize
         let letter = game.board[row][col]
         currentWord += letter
-        wordLabel.text = "Word: \(currentWord)"
+        inferenceLabel.text = "Word: \(currentWord)"
         
         currSubmission.append((row, col))
     }
@@ -122,7 +203,7 @@ final class BoggleHomeViewController: UIViewController {
         }
         
         currentWord = ""
-        wordLabel.text = "Word: "
+        inferenceLabel.text = "Word: "
         currSubmission.removeAll()
     }
     
@@ -201,5 +282,37 @@ class BoggleGame {
             }
         }
         return true
+    }
+}
+
+extension BoggleHomeViewController: SLRGTKCameraViewDelegate {
+    
+    func cameraViewDidSetupEngine() {
+        print("Did setup engine")
+    }
+    
+    func cameraViewDidBeginInferring() {
+        inferenceLabel.text = String(localized: "Inferring")
+    }
+    
+    func cameraViewDidInferSign(_ signInferenceResult: SignInferenceResult) {
+        inferenceLabel.text = signInferenceResult.inferences.first?.label
+        resetDetectButton()
+    }
+    
+    func cameraViewDidThrowError(_ error: any Error) {
+        DispatchQueue.main.async {
+            self.inferenceLabel.text = "Error!"
+            self.resetDetectButton()
+        }
+        
+        print(error.localizedDescription)
+    }
+    
+    private func resetDetectButton() {
+        var buttonConfiguration = signButton.configuration
+        buttonConfiguration?.title = String(localized: "Detect Again")
+        signButton.configuration = buttonConfiguration
+        signButton.isEnabled = true
     }
 }
