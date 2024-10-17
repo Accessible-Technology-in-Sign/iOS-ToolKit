@@ -12,7 +12,6 @@ final class BoggleHomeViewController: UIViewController {
     private var currentWord: String = ""
     private let game: BoggleGame
     private var inferenceLabel: UILabel!
-    private var submitButton: UIButton = UIButton()
     private var signButton: UIButton = UIButton()
     private let cameraView = SLRGTKCameraView()
     private var containerView = UIView()
@@ -32,14 +31,13 @@ final class BoggleHomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .white
+        view.backgroundColor = .black
         
         setupCameraView()
         setupContainerView()
         
         setupBoard()
         setupWordLabel()
-        setupSubmitButton()
         setupSignButton()
     }
     
@@ -82,7 +80,7 @@ final class BoggleHomeViewController: UIViewController {
                 let button = UIButton()
                 button.setTitle(game.board[row][col], for: .normal)
                 button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 24)
-                button.backgroundColor = .lightGray
+                button.backgroundColor = .darkGray
                 button.setTitleColor(.white, for: .normal)
                 button.tag = row * gridSize + col
                 button.addTarget(self, action: #selector(letterTapped(_:)), for: .touchUpInside)
@@ -107,40 +105,20 @@ final class BoggleHomeViewController: UIViewController {
     private func setupWordLabel() {
         inferenceLabel = UILabel()
         inferenceLabel.textAlignment = .center
-        inferenceLabel.font = UIFont.boldSystemFont(ofSize: 32)
-        inferenceLabel.text = "Word: "
-        inferenceLabel.textColor = .black
+        inferenceLabel.font = UIFont.boldSystemFont(ofSize: 24)
+        inferenceLabel.text = "When You See a Word Sign It!"
+        inferenceLabel.textColor = .white
         
         containerView.addSubview(inferenceLabel)
         inferenceLabel.translatesAutoresizingMaskIntoConstraints = false
         inferenceLabel.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
-        inferenceLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 40).isActive = true
-    }
-    
-    private func setupSubmitButton() {
-        submitButton.setTitle("Submit", for: .normal)
-        submitButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 24)
-        submitButton.backgroundColor = .blue
-        submitButton.setTitleColor(.white, for: .normal)
-        submitButton.addTarget(self, action: #selector(submitWord), for: .touchUpInside)
-
-        containerView.addSubview(submitButton)
-        submitButton.translatesAutoresizingMaskIntoConstraints = false
-        submitButton.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
-        
-        let buttonSize: CGFloat = 60
-        let padding: CGFloat = 10
-        let boardHeight = CGFloat(gridSize) * buttonSize + CGFloat(gridSize - 1) * padding
-        
-        submitButton.topAnchor.constraint(equalTo: containerView.topAnchor, constant: boardHeight + 150).isActive = true
-        submitButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        submitButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        inferenceLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 55).isActive = true
     }
     
     private func setupSignButton() {
         signButton.setTitle("Sign", for: .normal)
         signButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 24)
-        signButton.backgroundColor = .blue
+        signButton.backgroundColor = .orange
         signButton.setTitleColor(.white, for: .normal)
         signButton.addTarget(self, action: #selector(didTouchDownInsideStartButton(_:)), for: .touchDown)
         signButton.addTarget(self, action: #selector(didTouchUpStartButton(_:)), for: .touchUpInside)
@@ -150,18 +128,11 @@ final class BoggleHomeViewController: UIViewController {
         signButton.translatesAutoresizingMaskIntoConstraints = false
         signButton.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
         
-        signButton.topAnchor.constraint(equalTo: submitButton.bottomAnchor, constant: 20).isActive = true
+        let buttonSize: CGFloat = 60
+        let padding: CGFloat = 10
+        let boardHeight = CGFloat(gridSize) * buttonSize + CGFloat(gridSize - 1) * padding
+        signButton.topAnchor.constraint(equalTo: containerView.topAnchor, constant: boardHeight + 200).isActive = true
         signButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        signButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-    }
-    
-    private func setupInferenceLabel() {
-        let inferenceLabel = UILabel()
-        inferenceLabel.text = String(localized: "Press button to detect sign")
-        inferenceLabel.textAlignment = .center
-        
-        signButton.topAnchor.constraint(equalTo: signButton.bottomAnchor, constant: 20).isActive = true
-        signButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
         signButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
     
@@ -194,22 +165,36 @@ final class BoggleHomeViewController: UIViewController {
     }
     
     @objc private func submitWord() {
-        if game.words.contains(currentWord) {
-            highlightFoundWord()
-        } else {
-            let alert = UIAlertController(title: "Invalid Word", message: "The word '\(currentWord)' is not valid.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            present(alert, animated: true, completion: nil)
+            //highlightFoundWord()
+            if let wordPositions = game.getDictionary()[currentWord] {
+                let alertValid = UIAlertController(
+                    title: "Well done!",
+                    message: "The word '\(currentWord)' is present.",
+                    preferredStyle: .alert)
+                alertValid.addAction(UIAlertAction(title: "GREAT", style: .default, handler: {_ in self.highlightWordPositions(wordPositions)
+                }))
+                present(alertValid, animated: true, completion: nil)
+                inferenceLabel.text = "Find Another Word!"
+            }   else {
+                    let alertInvalid = UIAlertController(
+                        title: "Not quite",
+                        message: "The word '\(currentWord)' is not present.",
+                        preferredStyle: .alert
+            )
+                alertInvalid.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                present(alertInvalid, animated: true, completion: nil)
+                inferenceLabel.text = "Try Again!"
+                currentWord = ""
+                currSubmission.removeAll()
         }
-        
-        currentWord = ""
-        inferenceLabel.text = "Word: "
-        currSubmission.removeAll()
     }
     
-    private func highlightFoundWord() {
-        for (row, col) in currSubmission {
-            boardButtons[row][col].backgroundColor = .green
+    private func highlightWordPositions(_ positions: [(Int, Int)]) {
+        for (row, col) in positions {
+            let button = boardButtons[row][col]
+            UIView.animate(withDuration: 0.3) {
+                button.backgroundColor = .green
+            }
         }
     }
 }
@@ -218,7 +203,8 @@ class BoggleGame {
     let gridSize: Int
     var board: [[String]]
     private var visited: [[Bool]]
-    private let directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+    public var wordDictionary: [String: [(Int, Int)]] = [:]
+    public let directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
     var words: Set<String>
     
     init(gridSize: Int, words: Set<String>) {
@@ -227,6 +213,10 @@ class BoggleGame {
         self.visited = Array(repeating: Array(repeating: false, count: gridSize), count: gridSize)
         self.words = words
         generateBoard()
+    }
+    
+    public func getDictionary() -> [String: [(Int, Int)]] {
+        return wordDictionary
     }
     
     private func generateBoard() {
@@ -254,11 +244,17 @@ class BoggleGame {
             let direction = directions.randomElement()!
             
             if canPlaceWord(wordArray, row: startRow, col: startCol, direction: direction) {
+                print("WordArray: \(wordArray)")
+                var indices: [(Int, Int)] = []
                 for i in 0..<wordLength {
                     let newRow = startRow + i * direction.0
                     let newCol = startCol + i * direction.1
+                    indices.append((newRow, newCol))
                     board[newRow][newCol] = String(wordArray[i])
+                    print("Row: \(newRow)")
+                    print("Column: \(newCol)")
                 }
+                wordDictionary[word] = indices
                 return
             }
         }
@@ -296,14 +292,17 @@ extension BoggleHomeViewController: SLRGTKCameraViewDelegate {
     }
     
     func cameraViewDidInferSign(_ signInferenceResult: SignInferenceResult) {
-        inferenceLabel.text = signInferenceResult.inferences.first?.label
+        inferenceLabel.text = "Word : \(signInferenceResult.inferences.first!.label)"
+        currentWord = signInferenceResult.inferences.first!.label.uppercased()
+        submitWord()
         resetDetectButton()
     }
     
     func cameraViewDidThrowError(_ error: any Error) {
         DispatchQueue.main.async {
-            self.inferenceLabel.text = "Error!"
+            self.inferenceLabel.text = "Sign again"
             self.resetDetectButton()
+            self.currentWord = ""
         }
         
         print(error.localizedDescription)
